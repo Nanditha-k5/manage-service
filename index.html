@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Service Manager</title>
+</head>
+<body>
+  <div>
+    <button id="startProcessManager">Start Process Manager</button>
+    <button id="stopProcessManager">Stop Process Manager</button>
+    <button id="startServerManager">Start Server Manager</button>
+    <button id="stopServerManager">Stop Server Manager</button>
+    <button id="startActiveWorkspace">Start Active Workspace</button>
+    <button id="stopActiveWorkspace">Stop Active Workspace</button>
+    <button id="startLicenseServer">Start License Server</button>
+    <button id="stopLicenseServer">Stop License Server</button>
+    <button id="startMSSQL">Start MSSQL</button>
+    <button id="stopMSSQL">Stop MSSQL</button>
+    <div id="status"></div>
+  </div>
+
+  <script>
+    async function manageService(action, serviceName) {
+      try {
+        let response = await fetch(`http://localhost:5007/service/${action}/${serviceName}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        let result = await response.json();
+        document.getElementById('status').innerText = `${action.charAt(0).toUpperCase() + action.slice(1)} ${serviceName}: ${result.message}`;
+        document.getElementById(`${action}${serviceName.replace(/\s+/g, '')}`).disabled = true;
+        document.getElementById(`${action === 'start' ? 'stop' : 'start'}${serviceName.replace(/\s+/g, '')}`).disabled = false;
+      } catch (error) {
+        document.getElementById('status').innerText = `Error managing ${serviceName}: ${error}`;
+      }
+    }
+
+    document.getElementById('startProcessManager').onclick = () => manageService('start', 'ProcessManager');
+    document.getElementById('stopProcessManager').onclick = () => manageService('stop', 'ProcessManager');
+    document.getElementById('startServerManager').onclick = () => manageService('start', 'ServerManager');
+    document.getElementById('stopServerManager').onclick = () => manageService('stop', 'ServerManager');
+    document.getElementById('startActiveWorkspace').onclick = () => manageService('start', 'ActiveWorkspace');
+    document.getElementById('stopActiveWorkspace').onclick = () => manageService('stop', 'ActiveWorkspace');
+    document.getElementById('startLicenseServer').onclick = () => manageService('start', 'License Server');
+    document.getElementById('stopLicenseServer').onclick = () => manageService('stop', 'License Server');
+    document.getElementById('startMSSQL').onclick = () => manageService('start', 'MSSQL');
+    document.getElementById('stopMSSQL').onclick = () => manageService('stop', 'MSSQL');
+  </script>
+</body>
+</html>
+ 
